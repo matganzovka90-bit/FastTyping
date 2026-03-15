@@ -29,4 +29,13 @@ public class TextProvider {
         }
     }
 
+    public static String fetchMultipleQuotes(int count) {
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < count; i++) {
+            sb.append(fetchRandomQuote());
+            if(i < count - 1)
+                sb.append(" ");
+        }
+        return sb.toString();
+    }
 }
