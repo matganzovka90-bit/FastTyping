@@ -1,6 +1,6 @@
 package speed.fasttyping.strategy;
 
-public interface TextProviderStrategy {
+public interface TypingStrategy {
     String getText();
     int getDurationTime();
     String getModeName();
