@@ -2,7 +2,7 @@ package speed.fasttyping.strategy;
 
 import speed.fasttyping.util.TextProvider;
 
-public class EasyStrategy implements TextProviderStrategy {
+public class EasyStrategy implements TypingStrategy {
     @Override
     public String getText() {
         return TextProvider.fetchRandomQuote();
