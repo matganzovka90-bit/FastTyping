@@ -2,7 +2,7 @@ package speed.fasttyping.strategy;
 
 import speed.fasttyping.util.TextProvider;
 
-public class TimeAttackStrategy implements TextProviderStrategy {
+public class TimeAttackStrategy implements TypingStrategy {
 
     @Override
     public String getText() {
