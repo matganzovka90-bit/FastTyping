@@ -2,7 +2,7 @@ package speed.fasttyping.strategy;
 
 import speed.fasttyping.util.TextProvider;
 
-public class MarathonStrategy implements TextProviderStrategy {
+public class MarathonStrategy implements TypingStrategy {
     @Override
     public String getText() {
         return TextProvider.fetchMultipleQuotes(5);
