@@ -12,6 +12,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import speed.fasttyping.observer.AccuracyObserver;
+import speed.fasttyping.observer.WpmObserver;
 import speed.fasttyping.strategy.EasyStrategy;
 import speed.fasttyping.strategy.MarathonStrategy;
 import speed.fasttyping.strategy.TimeAttackStrategy;
@@ -27,6 +29,16 @@ public class MainWindowController {
     @FXML private TextField userInputField;
 
     private final TypingSession session = new TypingSession(new EasyStrategy());
+
+    @FXML
+    public void initialize() {
+        session.addObserver(new WpmObserver(wpmLabel));
+        session.addObserver(new AccuracyObserver(accuracyLabel));
+
+        userInputField.setOnKeyTyped(e -> {
+            session.onKeyTyped(userInputField.getText(), textToTypeLabel.getText());
+        });
+    }
 
     @FXML
     private void handleEasyMode() {
