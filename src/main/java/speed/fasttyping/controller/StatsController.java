@@ -1,0 +1,114 @@
+package speed.fasttyping.controller;
+
+import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
+import speed.fasttyping.dao.DatabaseConnection;
+import speed.fasttyping.dao.TypingResultDao;
+import speed.fasttyping.model.TypingResult;
+import speed.fasttyping.util.SessionManager;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+
+public class StatsController {
+
+    @FXML private Label bestWpmLabel;
+    @FXML private Label avgAccuracyLabel;
+    @FXML private Label totalSessionsLabel;
+
+    @FXML private TableView<TypingResult> resultsTable;
+    @FXML private TableColumn<TypingResult, Integer> wpmColumn;
+    @FXML private TableColumn<TypingResult, Double> accuracyColumn;
+    @FXML private TableColumn<TypingResult, Integer> errorsColumn;
+    @FXML private TableColumn<TypingResult, String> modeColumn;
+    @FXML private TableColumn<TypingResult, String> dateColumn;
+
+    @FXML
+    public void initialize() {
+        setupColumns();
+        loadStats();
+    }
+
+    private void setupColumns() {
+        wpmColumn.setCellValueFactory(cell ->
+                new javafx.beans.property.SimpleIntegerProperty(cell.getValue().getWpm()).asObject());
+
+        accuracyColumn.setCellValueFactory(cell ->
+                new javafx.beans.property.SimpleDoubleProperty(cell.getValue().getAccuracy()).asObject());
+
+        errorsColumn.setCellValueFactory(cell ->
+                new javafx.beans.property.SimpleIntegerProperty(cell.getValue().getErrors()).asObject());
+
+        modeColumn.setCellValueFactory(cell ->
+                new javafx.beans.property.SimpleStringProperty(cell.getValue().getModeName()));
+
+        dateColumn.setCellValueFactory(cell ->
+                new javafx.beans.property.SimpleStringProperty(
+                        cell.getValue().getCreatedAt().toString()
+                ));
+    }
+
+    private void loadStats() {
+        if (!SessionManager.getInstance().isLoggedIn()) return;
+
+        int userId = SessionManager.getInstance().getCurrentUser().getId();
+
+        try {
+            Connection conn = DatabaseConnection.getInstance().getConnection();
+            TypingResultDao dao = new TypingResultDao(conn);
+
+            List<TypingResult> results = dao.getByUserId(userId);
+
+            resultsTable.setItems(FXCollections.observableArrayList(results));
+
+            int bestWpm = dao.getBestWpm(userId);
+            bestWpmLabel.setText(String.valueOf(bestWpm));
+
+            totalSessionsLabel.setText(String.valueOf(results.size()));
+
+            if (!results.isEmpty()) {
+                double avgAccuracy = results.stream()
+                        .mapToDouble(TypingResult::getAccuracy)
+                        .average()
+                        .orElse(0.0);
+                avgAccuracyLabel.setText(String.format("%.0f%%", avgAccuracy));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleBackClick(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/speed/fasttyping/view/main.fxml")
+            );
+            Parent root = loader.load();
+
+            Screen screen = Screen.getPrimary();
+            Rectangle2D bounds = screen.getVisualBounds();
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root, bounds.getWidth(), bounds.getHeight()));
+            stage.setTitle("Тренажер сліпого друку");
+            stage.setMaximized(true);
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
