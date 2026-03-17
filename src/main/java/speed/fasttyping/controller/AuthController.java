@@ -13,6 +13,8 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import speed.fasttyping.dao.DatabaseConnection;
 import speed.fasttyping.dao.UserDao;
+import speed.fasttyping.model.User;
+import speed.fasttyping.util.SessionManager;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -128,10 +130,12 @@ public class AuthController {
             Connection conn = DatabaseConnection.getInstance().getConnection();
             UserDao userDao = new UserDao(conn);
 
-            boolean success = userDao.login(username, password);
+            User user = userDao.login(username, password);
 
-            if (!success) {
+            if (user == null) {
                 showError("Невірне ім'я або пароль");
+            } else {
+                SessionManager.getInstance().login(user);
             }
 
         } catch (SQLException e) {
@@ -159,7 +163,6 @@ public class AuthController {
         try {
             Connection conn = DatabaseConnection.getInstance().getConnection();
             UserDao userDao = new UserDao(conn);
-            userDao.createUserTable();
 
             if (userDao.existsByUsername(username)) {
                 showError("Користувач з таким іменем вже існує");

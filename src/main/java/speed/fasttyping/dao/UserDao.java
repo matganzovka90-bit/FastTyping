@@ -1,5 +1,7 @@
 package speed.fasttyping.dao;
 
+import speed.fasttyping.model.User;
+
 import java.sql.*;
 
 public class UserDao {
@@ -41,9 +43,9 @@ public class UserDao {
         }
     }
 
-    public boolean login(String username, String password) throws SQLException {
+    public User login(String username, String password) throws SQLException {
         String sql = """
-                SELECT id FROM users
+                SELECT id, username FROM users
                 WHERE username = ? AND password = ?""";
 
         try(PreparedStatement prsmt = connection.prepareStatement(sql)) {
@@ -51,9 +53,16 @@ public class UserDao {
             prsmt.setString(2, password);
 
             try(ResultSet rs = prsmt.executeQuery()) {
-                return rs.next();
+                if(rs.next()) {
+                    return new User(
+                            rs.getInt("id"),
+                            rs.getString("username")
+                    );
+                }
             }
         }
+
+        return null;
     }
 
     public boolean existsByUsername(String username) throws SQLException {

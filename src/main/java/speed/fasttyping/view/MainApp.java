@@ -7,6 +7,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import speed.fasttyping.dao.DatabaseConnection;
+import speed.fasttyping.dao.DatabaseInitializer;
+
+import java.sql.Connection;
 
 
 public class MainApp extends Application {
@@ -15,6 +19,9 @@ public class MainApp extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(
                 getClass().getResource("main.fxml")
         );
+
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        new DatabaseInitializer(conn).initialize();
 
         Parent root = fxmlLoader.load();
         Screen screen = Screen.getPrimary();

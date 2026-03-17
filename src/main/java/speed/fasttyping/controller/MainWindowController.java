@@ -1,5 +1,7 @@
 package speed.fasttyping.controller;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,14 +14,21 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+import speed.fasttyping.dao.DatabaseConnection;
+import speed.fasttyping.dao.TypingResultDao;
+import speed.fasttyping.model.TypingResult;
 import speed.fasttyping.observer.AccuracyObserver;
 import speed.fasttyping.observer.WpmObserver;
 import speed.fasttyping.strategy.EasyStrategy;
 import speed.fasttyping.strategy.MarathonStrategy;
 import speed.fasttyping.strategy.TimeAttackStrategy;
 import speed.fasttyping.strategy.TypingSession;
+import speed.fasttyping.util.SessionManager;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class MainWindowController {
     @FXML private Label textToTypeLabel;
@@ -30,13 +39,26 @@ public class MainWindowController {
 
     private final TypingSession session = new TypingSession(new EasyStrategy());
 
+    private Timeline timer;
+    private int timeLeft;
+
     @FXML
     public void initialize() {
         session.addObserver(new WpmObserver(wpmLabel));
         session.addObserver(new AccuracyObserver(accuracyLabel));
 
         userInputField.setOnKeyTyped(e -> {
-            session.onKeyTyped(userInputField.getText(), textToTypeLabel.getText());
+            String typed = userInputField.getText();
+            String expected = textToTypeLabel.getText();
+
+            if(typed.length() == 1)
+                startTimer();
+
+            session.onKeyTyped(typed, expected);
+
+            if(session.isCompleted(typed, expected)) {
+                onSessionCompleted();
+            }
         });
     }
 
@@ -59,6 +81,8 @@ public class MainWindowController {
     }
 
     private void loadText() {
+        if (timer != null) timer.stop();
+
         modeLabel.setText("Режим: " + session.getModeName() + " · Завантаження...");
         textToTypeLabel.setText("Завантаження тексту...");
         userInputField.clear();
@@ -68,10 +92,6 @@ public class MainWindowController {
             String text = session.getText();
             Platform.runLater(() -> {
                 textToTypeLabel.setText(text);
-                String duration = session.getDurationSeconds() == 0
-                        ? "без обмежень"
-                        : session.getDurationSeconds() + " сек";
-                modeLabel.setText("Режим: " + session.getModeName() + " · " + duration);
                 userInputField.setDisable(false);
                 userInputField.requestFocus();
             });
@@ -113,6 +133,55 @@ public class MainWindowController {
         } catch (IOException e) {
             e.printStackTrace();
             System.err.println("Помилка при відкритті вікна авторизації: " + e.getMessage());
+        }
+    }
+
+    private void startTimer() {
+        if(timer != null)
+            timer.stop();
+
+        timeLeft = session.getDurationSeconds();
+        if(timeLeft == 0)
+            return;
+
+        timer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+            timeLeft--;
+            modeLabel.setText("Режим: " + session.getModeName() + " · " + timeLeft + " сек");
+
+            if(timeLeft <= 0) {
+                timer.stop();
+                onSessionCompleted();
+            }
+        }));
+        timer.setCycleCount(Timeline.INDEFINITE);
+        timer.play();
+    }
+
+    private void onSessionCompleted() {
+        userInputField.setDisable(true);
+        if(timer != null) timer.stop();
+
+        if(!SessionManager.getInstance().isLoggedIn()) {
+            return;
+        }
+
+        int userId = SessionManager.getInstance().getCurrentUser().getId();
+
+        TypingResult result = new TypingResult(
+                userId,
+                session.getLastWpm(),
+                session.getLastAccurancy(),
+                session.getLastErrors(),
+                session.getModeName()
+        );
+
+        try{
+            Connection connection = DatabaseConnection.getInstance().getConnection();
+            TypingResultDao dao = new TypingResultDao(connection);
+            dao.createTable();
+            dao.save(result);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }
