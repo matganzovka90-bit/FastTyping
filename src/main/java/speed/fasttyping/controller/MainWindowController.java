@@ -63,6 +63,28 @@ public class MainWindowController {
     }
 
     @FXML
+    private void handleStatsClick(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/speed/fasttyping/view/stats.fxml")
+            );
+            Parent root = loader.load();
+
+            Screen screen = Screen.getPrimary();
+            Rectangle2D bounds = screen.getVisualBounds();
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root, bounds.getWidth(), bounds.getHeight()));
+            stage.setTitle("Статистика");
+            stage.setMaximized(true);
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
     private void handleEasyMode() {
         session.setStrategy(new EasyStrategy());
         loadText();
