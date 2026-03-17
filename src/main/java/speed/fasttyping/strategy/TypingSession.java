@@ -12,6 +12,10 @@ public class TypingSession {
 
     private List<TypingObserver> observers = new ArrayList<>();
 
+    private int lastWpm = 0;
+    private double lastAccurancy = 100.0;
+    private int lastErrors = 0;
+
     public TypingSession(TypingStrategy strategy) {
         this.strategy = strategy;
     }
@@ -37,6 +41,10 @@ public class TypingSession {
         notifyObservers(wpm, accuracy, errors);
     }
 
+    public boolean isCompleted(String typed, String expected) {
+        return typed.length() >= expected.length();
+    }
+
     private int calculateWpm(String typed) {
         if(typed.isEmpty()) {
             return 0;
@@ -47,7 +55,7 @@ public class TypingSession {
        }
 
        long elapsedMillis = System.currentTimeMillis() - startTime;
-       double minutes = elapsedMillis / 6000.0;
+       double minutes = elapsedMillis / 60000.0;
 
        if(minutes == 0) {
            return 0;
@@ -83,6 +91,18 @@ public class TypingSession {
         }
 
         return errors;
+    }
+
+    public int getLastWpm() {
+        return lastWpm;
+    }
+
+    public double getLastAccurancy() {
+        return lastAccurancy;
+    }
+
+    public int getLastErrors() {
+        return lastErrors;
     }
 
     public String getText() {
