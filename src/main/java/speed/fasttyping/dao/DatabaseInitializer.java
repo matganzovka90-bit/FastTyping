@@ -11,7 +11,6 @@ public class DatabaseInitializer {
     }
 
     public void initialize() throws SQLException {
-        System.out.println("База та таблиці створено!!!");
         new UserDao(connection).createUserTable();
         new TypingResultDao(connection).createTable();
     }
