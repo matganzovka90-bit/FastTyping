@@ -15,15 +15,20 @@ import javafx.scene.control.TextField;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import speed.fasttyping.dao.DatabaseConnection;
+import speed.fasttyping.dao.TypingResultDao;
+import speed.fasttyping.model.TypingResult;
 import speed.fasttyping.observer.AccuracyObserver;
 import speed.fasttyping.observer.WpmObserver;
 import speed.fasttyping.strategy.EasyStrategy;
 import speed.fasttyping.strategy.MarathonStrategy;
 import speed.fasttyping.strategy.TimeAttackStrategy;
 import speed.fasttyping.strategy.TypingSession;
+import speed.fasttyping.util.SessionManager;
 
 import java.io.IOException;
-import java.util.Timer;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class MainWindowController {
     @FXML private Label textToTypeLabel;
@@ -136,7 +141,6 @@ public class MainWindowController {
             timer.stop();
 
         timeLeft = session.getDurationSeconds();
-
         if(timeLeft == 0)
             return;
 
@@ -157,5 +161,27 @@ public class MainWindowController {
         userInputField.setDisable(true);
         if(timer != null) timer.stop();
 
+        if(!SessionManager.getInstance().isLoggedIn()) {
+            return;
+        }
+
+        int userId = SessionManager.getInstance().getCurrentUser().getId();
+
+        TypingResult result = new TypingResult(
+                userId,
+                session.getLastWpm(),
+                session.getLastAccurancy(),
+                session.getLastErrors(),
+                session.getModeName()
+        );
+
+        try{
+            Connection connection = DatabaseConnection.getInstance().getConnection();
+            TypingResultDao dao = new TypingResultDao(connection);
+            dao.createTable();
+            dao.save(result);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
