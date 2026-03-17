@@ -192,7 +192,7 @@ public class MainWindowController {
         TypingResult result = new TypingResult(
                 userId,
                 session.getLastWpm(),
-                session.getLastAccurancy(),
+                session.getLastAccuracy(),
                 session.getLastErrors(),
                 session.getModeName()
         );

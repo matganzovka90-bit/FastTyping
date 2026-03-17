@@ -13,7 +13,7 @@ public class TypingSession {
     private List<TypingObserver> observers = new ArrayList<>();
 
     private int lastWpm = 0;
-    private double lastAccurancy = 100.0;
+    private double lastAccuracy = 100.0;
     private int lastErrors = 0;
 
     public TypingSession(TypingStrategy strategy) {
@@ -23,6 +23,9 @@ public class TypingSession {
     public void setStrategy(TypingStrategy strategy) {
         this.strategy = strategy;
         this.startTime = 0;
+        this.lastWpm = 0;
+        this.lastAccuracy = 100.0;
+        this.lastErrors = 0;
     }
 
     public void addObserver(TypingObserver o) {
@@ -35,10 +38,10 @@ public class TypingSession {
         }
     }
     public void onKeyTyped(String typed, String expected) {
-        int wpm = calculateWpm(typed);
-        double accuracy = calculateAccuracy(typed, expected);
-        int errors = countErrors(typed, expected);
-        notifyObservers(wpm, accuracy, errors);
+        lastWpm = calculateWpm(typed);
+        lastAccuracy = calculateAccuracy(typed, expected);
+        lastErrors = countErrors(typed, expected);
+        notifyObservers(lastWpm, lastAccuracy, lastErrors);
     }
 
     public boolean isCompleted(String typed, String expected) {
@@ -97,8 +100,8 @@ public class TypingSession {
         return lastWpm;
     }
 
-    public double getLastAccurancy() {
-        return lastAccurancy;
+    public double getLastAccuracy() {
+        return lastAccuracy;
     }
 
     public int getLastErrors() {
