@@ -17,6 +17,7 @@
 
     <HBox alignment="CENTER_RIGHT" spacing="15" style="-fx-padding: 0 0 20 0;">
         <Button text="Статистика"
+                onAction="#handleStatsClick"
                 style="-fx-background-color: transparent; -fx-text-fill: #4b6eaf; -fx-cursor: hand; -fx-font-size: 14px; -fx-underline: true;"/>
 
         <Label text="|" style="-fx-text-fill: #555555;"/>
