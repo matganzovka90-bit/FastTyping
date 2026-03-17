@@ -1,5 +1,6 @@
 package speed.fasttyping.controller;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -19,6 +20,8 @@ import speed.fasttyping.util.SessionManager;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class StatsController {
@@ -37,6 +40,14 @@ public class StatsController {
     @FXML
     public void initialize() {
         setupColumns();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        dateColumn.setCellValueFactory(cellData -> {
+            LocalDateTime dt = cellData.getValue().getCreatedAt();
+            String formattedDate = (dt != null) ? dt.format(formatter) : "";
+            return new SimpleStringProperty(formattedDate);
+        });
+
         loadStats();
     }
 
