@@ -11,8 +11,7 @@ public class TypingResult {
     private String modeName;
     private LocalDateTime createdAt;
 
-    public TypingResult(int id, int userId, int wpm, double accuracy, int errors, String modeName) {
-        this.id = id;
+    public TypingResult(int userId, int wpm, double accuracy, int errors, String modeName) {
         this.userId = userId;
         this.wpm = wpm;
         this.accuracy = accuracy;
