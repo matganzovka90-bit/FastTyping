@@ -51,6 +51,7 @@ public class MainWindowController {
 
     private Timeline timer;
     private int timeLeft;
+    private boolean isResetting = false;
 
     @FXML
     public void initialize() {
@@ -65,23 +66,23 @@ public class MainWindowController {
         placeholder.setStyle("-fx-font-size: 24px; -fx-font-family: 'Monospaced';");
         textFlow.getChildren().add(placeholder);
 
-        userInputField.setOnKeyTyped(e -> {
-            String typed = userInputField.getText();
-
-            renderText(typed);
-
-            if (typed.length() == 1) startTimer();
-            session.onKeyTyped(typed, currentText);
-
-            if (session.isCompleted(typed, currentText)) {
-                onSessionCompleted();
-            }
-        });
-
         userInputField.textProperty().addListener((obs, oldVal, newVal) -> {
+            if(isResetting) return;
+
             if (newVal.length() < oldVal.length()) {
-                Platform.runLater(() -> userInputField.setText(oldVal));
+                isResetting = true;
+                Platform.runLater(() -> {
+                    userInputField.setText(oldVal);
+                    userInputField.positionCaret(oldVal.length());
+                    isResetting = false;
+                });
+                return;
             }
+
+            renderText(newVal);
+            if (newVal.length() == 1) startTimer();
+            session.onKeyTyped(newVal, currentText);
+            if (session.isCompleted(newVal, currentText)) onSessionCompleted();
         });
     }
 
@@ -154,7 +155,10 @@ public class MainWindowController {
         textFlow.getChildren().clear();
         textFlow.getChildren().add(loading);
 
+        isResetting = true;
         userInputField.clear();
+        isResetting = false;
+
         userInputField.setDisable(true);
 
         new Thread(() -> {
