@@ -20,6 +20,7 @@ import speed.fasttyping.dao.DatabaseConnection;
 import speed.fasttyping.dao.TypingResultDao;
 import speed.fasttyping.model.TypingResult;
 import speed.fasttyping.observer.AccuracyObserver;
+import speed.fasttyping.observer.ErrorObserver;
 import speed.fasttyping.observer.WpmObserver;
 import speed.fasttyping.strategy.EasyStrategy;
 import speed.fasttyping.strategy.MarathonStrategy;
@@ -37,6 +38,7 @@ public class MainWindowController {
     @FXML private Label textToTypeLabel;
     @FXML private Label modeLabel;
     @FXML private Label wpmLabel;
+    @FXML private Label errorsLabel;
     @FXML private Label accuracyLabel;
     @FXML private TextField userInputField;
 
@@ -49,6 +51,7 @@ public class MainWindowController {
     public void initialize() {
         session.addObserver(new WpmObserver(wpmLabel));
         session.addObserver(new AccuracyObserver(accuracyLabel));
+        session.addObserver(new ErrorObserver(errorsLabel));
 
         userInputField.setOnKeyTyped(e -> {
             String typed = userInputField.getText();

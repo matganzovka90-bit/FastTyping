@@ -90,6 +90,12 @@
                 <Label fx:id="accuracyLabel" text="100%" style="-fx-text-fill: #629755; -fx-font-size: 32px; -fx-font-weight: bold;"/>
                 <Label text="ACCURACY" style="-fx-text-fill: #777777; -fx-font-size: 10px;"/>
             </VBox>
+
+            <VBox alignment="CENTER">
+                <Label text="ПОМИЛКИ" style="-fx-text-fill: #777777; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                <Label fx:id="errorsLabel" text="0" style="-fx-text-fill: #cc3232; -fx-font-size: 32px; -fx-font-weight: bold;"/>
+                <Label text="ERRORS" style="-fx-text-fill: #777777; -fx-font-size: 10px;"/>
+            </VBox>
         </HBox>
     </VBox>
 
