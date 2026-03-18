@@ -22,7 +22,9 @@ public class StatsController {
 
     @FXML private Label bestWpmLabel;
     @FXML private Label avgAccuracyLabel;
+    @FXML private Label avgWpmLabel;
     @FXML private Label totalSessionsLabel;
+    @FXML private ComboBox<String> modeFilter;
 
     @FXML private TableView<TypingResult> resultsTable;
     @FXML private TableColumn<TypingResult, Integer> wpmColumn;
@@ -34,14 +36,7 @@ public class StatsController {
     @FXML
     public void initialize() {
         setupColumns();
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
-        dateColumn.setCellValueFactory(cellData -> {
-            LocalDateTime dt = cellData.getValue().getCreatedAt();
-            String formattedDate = (dt != null) ? dt.format(formatter) : "";
-            return new SimpleStringProperty(formattedDate);
-        });
-
+        setupModeFilter();
         loadStats();
     }
 
@@ -58,10 +53,41 @@ public class StatsController {
         modeColumn.setCellValueFactory(cell ->
                 new javafx.beans.property.SimpleStringProperty(cell.getValue().getModeName()));
 
-        dateColumn.setCellValueFactory(cell ->
-                new javafx.beans.property.SimpleStringProperty(
-                        cell.getValue().getCreatedAt().toString()
-                ));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        dateColumn.setCellValueFactory(cellData -> {
+            LocalDateTime dt = cellData.getValue().getCreatedAt();
+            String formattedDate = (dt != null) ? dt.format(formatter) : "";
+            return new SimpleStringProperty(formattedDate);
+        });
+    }
+
+    private void setupModeFilter() {
+        modeFilter.getItems().addAll("Всі", "Easy", "Time attack", "Marathon", "Top 5");
+        modeFilter.setValue("All");
+        modeFilter.setOnAction(e -> filterByMode());
+    }
+
+    private void filterByMode() {
+        if (!SessionManager.getInstance().isLoggedIn()) return;
+
+        int userId = SessionManager.getInstance().getCurrentUser().getId();
+        String selected = modeFilter.getValue();
+
+        try {
+            TypingResultDao dao = DaoFactory.getInstance().getTypingResultDao();
+            List<TypingResult> results;
+
+            switch (selected) {
+                case "Top 5" -> results = dao.getTopResults(userId, 5);
+                case "Всі" -> results = dao.getByUserId(userId);
+                default -> results = dao.getResultsByMode(userId, selected);
+            }
+
+            updateTable(results);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadStats() {
@@ -71,26 +97,31 @@ public class StatsController {
 
         try {
             TypingResultDao dao = DaoFactory.getInstance().getTypingResultDao();
-
             List<TypingResult> results = dao.getByUserId(userId);
 
-            resultsTable.setItems(FXCollections.observableArrayList(results));
-
-            int bestWpm = dao.getBestWpm(userId);
-            bestWpmLabel.setText(String.valueOf(bestWpm));
-
-            totalSessionsLabel.setText(String.valueOf(results.size()));
-
-            if (!results.isEmpty()) {
-                double avgAccuracy = results.stream()
-                        .mapToDouble(TypingResult::getAccuracy)
-                        .average()
-                        .orElse(0.0);
-                avgAccuracyLabel.setText(String.format("%.1f%%", avgAccuracy));
-            }
+            updateTable(results);
+            updateSummary(dao, userId, results);
 
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void updateTable(List<TypingResult> results) {
+        resultsTable.setItems(FXCollections.observableArrayList(results));
+    }
+
+    private void updateSummary(TypingResultDao dao, int userId, List<TypingResult> results) throws SQLException {
+        bestWpmLabel.setText(String.valueOf(dao.getBestWpm(userId)));
+        avgWpmLabel.setText(String.valueOf(dao.getAverageWpm(userId)));
+        totalSessionsLabel.setText(String.valueOf(results.size()));
+
+        if (!results.isEmpty()) {
+            double avgAccuracy = results.stream()
+                    .mapToDouble(TypingResult::getAccuracy)
+                    .average()
+                    .orElse(0.0);
+            avgAccuracyLabel.setText(String.format("%.1f%%", avgAccuracy));
         }
     }
 

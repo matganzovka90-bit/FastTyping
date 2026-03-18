@@ -52,17 +52,7 @@ public class TypingResultDao {
             pstmt.setInt(1, userId);
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    LocalDateTime dateTime = rs.getObject("created_at", LocalDateTime.class);
-                    TypingResult result = new TypingResult(
-                            rs.getInt("user_id"),
-                            rs.getInt("wpm"),
-                            rs.getDouble("accuracy"),
-                            rs.getInt("errors"),
-                            rs.getString("mode_name"),
-                            dateTime
-                    );
-                    result.setId(rs.getInt("id"));
-                    results.add(result);
+                    results.add(mapRow(rs));
                 }
             }
         }
@@ -78,5 +68,69 @@ public class TypingResultDao {
             }
         }
         return 0;
+    }
+
+    public double getAverageWpm(int userId) throws SQLException {
+        String sql = "SELECT AVG(wpm) FROM results WHERE user_id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    double avg = rs.getDouble(1);
+                    return Math.round(avg * 10.0) / 10.0;
+                }
+            }
+        }
+        return 0.0;
+    }
+
+    public List<TypingResult> getResultsByMode(int userId, String modeName) throws SQLException {
+        if (modeName == null || modeName.isBlank()) return new ArrayList<>();
+
+        String sql = "SELECT * FROM results WHERE user_id = ? AND mode_name = ? ORDER BY created_at DESC";
+        List<TypingResult> results = new ArrayList<>();
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            pstmt.setString(2, modeName);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    results.add(mapRow(rs));
+                }
+            }
+        }
+        return results;
+    }
+
+    public List<TypingResult> getTopResults(int userId, int limit) throws SQLException {
+        if (limit <= 0) return new ArrayList<>();
+
+        String sql = "SELECT * FROM results WHERE user_id = ? ORDER BY wpm DESC LIMIT ?";
+        List<TypingResult> results = new ArrayList<>();
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, limit);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    results.add(mapRow(rs));
+                }
+            }
+        }
+        return results;
+    }
+
+    private TypingResult mapRow(ResultSet rs) throws SQLException {
+        LocalDateTime dateTime = rs.getObject("created_at", LocalDateTime.class);
+        TypingResult result = new TypingResult(
+                rs.getInt("user_id"),
+                rs.getInt("wpm"),
+                rs.getDouble("accuracy"),
+                rs.getInt("errors"),
+                rs.getString("mode_name"),
+                dateTime
+        );
+        result.setId(rs.getInt("id"));
+        return result;
     }
 }
