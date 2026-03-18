@@ -7,14 +7,12 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import speed.fasttyping.dao.DatabaseConnection;
+import speed.fasttyping.dao.DaoFactory;
 import speed.fasttyping.dao.TypingResultDao;
 import speed.fasttyping.model.TypingResult;
 import speed.fasttyping.util.SceneNavigator;
 import speed.fasttyping.util.SessionManager;
 
-import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -72,8 +70,7 @@ public class StatsController {
         int userId = SessionManager.getInstance().getCurrentUser().getId();
 
         try {
-            Connection conn = DatabaseConnection.getInstance().getConnection();
-            TypingResultDao dao = new TypingResultDao(conn);
+            TypingResultDao dao = DaoFactory.getInstance().getTypingResultDao();
 
             List<TypingResult> results = dao.getByUserId(userId);
 
