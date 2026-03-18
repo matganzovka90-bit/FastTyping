@@ -136,10 +136,33 @@ public class AuthController {
                 showError("Невірне ім'я або пароль");
             } else {
                 SessionManager.getInstance().login(user);
+                goToMain();
             }
 
         } catch (SQLException e) {
             showError("Помилка з'єднання з базою даних");
+            e.printStackTrace();
+        }
+    }
+
+    private void goToMain() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/speed/fasttyping/view/main.fxml")
+            );
+            Parent root = loader.load();
+
+            Screen screen = Screen.getPrimary();
+            Rectangle2D bounds = screen.getVisualBounds();
+
+            Stage stage = (Stage) submitBtn.getScene().getWindow();
+            stage.setScene(new Scene(root, bounds.getWidth(), bounds.getHeight()));
+            stage.setTitle("Тренажер сліпого друку");
+            stage.setMaximized(true);
+            stage.show();
+
+        } catch (IOException e) {
+            showError("Помилка при поверненні на головну");
             e.printStackTrace();
         }
     }

@@ -4,15 +4,20 @@ import speed.fasttyping.model.User;
 
 public class SessionManager {
 
-    private static SessionManager instance;
+    private static volatile SessionManager instance;
     private User currentUser;
 
     private SessionManager() {}
 
     public static SessionManager getInstance() {
         if(instance == null) {
-            instance = new SessionManager();
+            synchronized (SessionManager.class) {
+                if(instance == null) {
+                    instance = new SessionManager();
+                }
+            }
         }
+
         return instance;
     }
 

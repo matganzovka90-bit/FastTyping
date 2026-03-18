@@ -11,6 +11,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Screen;
@@ -42,6 +43,9 @@ public class MainWindowController {
     @FXML private Label accuracyLabel;
     @FXML private TextField userInputField;
 
+    @FXML private Button loginBtn;
+    @FXML private Button registerBtn;
+
     private final TypingSession session = new TypingSession(new EasyStrategy());
 
     private Timeline timer;
@@ -52,6 +56,8 @@ public class MainWindowController {
         session.addObserver(new WpmObserver(wpmLabel));
         session.addObserver(new AccuracyObserver(accuracyLabel));
         session.addObserver(new ErrorObserver(errorsLabel));
+
+        updateAuthBar();
 
         userInputField.setOnKeyTyped(e -> {
             String typed = userInputField.getText();
@@ -66,6 +72,24 @@ public class MainWindowController {
                 onSessionCompleted();
             }
         });
+    }
+
+    private void updateAuthBar() {
+        if (SessionManager.getInstance().isLoggedIn()) {
+            String name = SessionManager.getInstance().getCurrentUser().getUsername();
+            loginBtn.setVisible(false);
+            loginBtn.setManaged(false);
+            registerBtn.setText(name);
+            registerBtn.setOnAction(e -> handleLogout());
+        }
+    }
+
+    private void handleLogout() {
+        SessionManager.getInstance().logout();
+        loginBtn.setVisible(true);
+        loginBtn.setManaged(true);
+        registerBtn.setText("Реєстрація");
+        registerBtn.setOnAction(this::handleRegistrationButtonClick);
     }
 
     @FXML
