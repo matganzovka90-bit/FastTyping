@@ -3,6 +3,7 @@ package speed.fasttyping.dao;
 import speed.fasttyping.model.TypingResult;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,12 +52,14 @@ public class TypingResultDao {
             pstmt.setInt(1, userId);
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
+                    LocalDateTime dateTime = rs.getObject("created_at", LocalDateTime.class);
                     TypingResult result = new TypingResult(
                             rs.getInt("user_id"),
                             rs.getInt("wpm"),
                             rs.getDouble("accuracy"),
                             rs.getInt("errors"),
-                            rs.getString("mode_name")
+                            rs.getString("mode_name"),
+                            dateTime
                     );
                     result.setId(rs.getInt("id"));
                     results.add(result);

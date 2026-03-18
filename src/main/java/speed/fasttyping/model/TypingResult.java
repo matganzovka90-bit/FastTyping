@@ -11,17 +11,16 @@ public class TypingResult {
     private String modeName;
     private LocalDateTime createdAt;
 
-    public TypingResult(int userId, int wpm, double accuracy, int errors, String modeName) {
+    public TypingResult(int userId, int wpm, double accuracy, int errors, String modeName, LocalDateTime createdAt) {
         this.userId = userId;
         this.wpm = wpm;
         this.accuracy = accuracy;
         this.errors = errors;
         this.modeName = modeName;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = createdAt;
     }
-
-    public int getId() {
-        return id;
+    public TypingResult(int userId, int wpm, double accuracy, int errors, String modeName) {
+        this(userId, wpm, accuracy, errors, modeName, LocalDateTime.now());
     }
 
     public void setId(int id) {
