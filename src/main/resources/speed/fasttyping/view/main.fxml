@@ -22,11 +22,13 @@
 
         <Label text="|" style="-fx-text-fill: #555555;"/>
 
-        <Button text="Увійти"
+        <Button fx:id="loginBtn"
+                text="Увійти"
                 onAction="#handleLoginButtonClick"
                 style="-fx-background-color: transparent; -fx-text-fill: #a9b7c6; -fx-cursor: hand; -fx-font-size: 14px;"/>
 
-        <Button text="Реєстрація"
+        <Button fx:id="registerBtn"
+                text="Реєстрація"
                 onAction="#handleRegistrationButtonClick"
                 style="-fx-background-color: #4b6eaf; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 5;"/>
     </HBox>
