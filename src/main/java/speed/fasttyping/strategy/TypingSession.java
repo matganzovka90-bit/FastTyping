@@ -78,7 +78,8 @@ public class TypingSession {
                 correct++;
         }
 
-        return (correct / (double) typed.length()) * 100.0;
+        double accuracy = (correct / (double) typed.length()) * 100.0;
+        return Math.round(accuracy * 10.0) / 10.0;
     }
 
     private int countErrors(String typed, String expected) {

@@ -86,7 +86,7 @@ public class StatsController {
                         .mapToDouble(TypingResult::getAccuracy)
                         .average()
                         .orElse(0.0);
-                avgAccuracyLabel.setText(String.format("%.0f%%", avgAccuracy));
+                avgAccuracyLabel.setText(String.format("%.1f%%", avgAccuracy));
             }
 
         } catch (SQLException e) {
