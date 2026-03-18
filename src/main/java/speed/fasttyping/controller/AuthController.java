@@ -9,10 +9,12 @@ import javafx.stage.Stage;
 import speed.fasttyping.dao.DaoFactory;
 import speed.fasttyping.dao.UserDao;
 import speed.fasttyping.model.User;
+import speed.fasttyping.util.InputValidator;
 import speed.fasttyping.util.SceneNavigator;
 import speed.fasttyping.util.SessionManager;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
 public class AuthController {
 
@@ -29,6 +31,7 @@ public class AuthController {
     @FXML private Button submitBtn;
 
     private boolean isLoginMode = true;
+    private final InputValidator validator = new InputValidator();
 
 
     private static final String TAB_ACTIVE =
@@ -79,7 +82,6 @@ public class AuthController {
         confirmBox.setManaged(true);
     }
 
-
     @FXML
     protected void onSubmitClick() {
         String username = usernameField.getText().trim();
@@ -92,7 +94,6 @@ public class AuthController {
         }
     }
 
-
     @FXML
     protected void onBackClick(ActionEvent event) {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -101,11 +102,14 @@ public class AuthController {
 
 
     private void handleLogin(String username, String password) {
-        if (!validateBasicFields(username, password)) return;
+        Optional<String> error = validator.validateAll(username, password);
+        if (error.isPresent()) {
+            showError(error.get());
+            return;
+        }
 
         try {
             UserDao dao = DaoFactory.getInstance().getUserDao();
-
             User user = dao.login(username, password);
 
             if (user == null) {
@@ -128,17 +132,11 @@ public class AuthController {
 
 
     private void handleRegister(String username, String password) {
-        if (!validateBasicFields(username, password)) return;
-
         String confirm = confirmPasswordField.getText();
 
-        if (!password.equals(confirm)) {
-            showError("Паролі не співпадають");
-            return;
-        }
-
-        if (password.length() < 6) {
-            showError("Пароль має бути мінімум 6 символів");
+        Optional<String> error = validator.validateAllWithConfirm(username, password, confirm);
+        if (error.isPresent()) {
+            showError(error.get());
             return;
         }
 
@@ -151,7 +149,6 @@ public class AuthController {
             }
 
             dao.create(username, password);
-
             onLoginTabClick();
             usernameField.setText(username);
 
@@ -159,19 +156,6 @@ public class AuthController {
             showError("Помилка з'єднання з базою даних");
             e.printStackTrace();
         }
-    }
-
-
-    private boolean validateBasicFields(String username, String password) {
-        if (username.isEmpty()) {
-            showError("Введіть ім'я користувача");
-            return false;
-        }
-        if (password.isEmpty()) {
-            showError("Введіть пароль");
-            return false;
-        }
-        return true;
     }
 
 
