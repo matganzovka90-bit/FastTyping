@@ -13,6 +13,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -29,7 +31,6 @@ import speed.fasttyping.strategy.TimeAttackStrategy;
 import speed.fasttyping.strategy.TypingSession;
 import speed.fasttyping.util.SceneNavigator;
 import speed.fasttyping.util.SessionManager;
-import speed.fasttyping.util.TextRenderer;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -52,21 +53,21 @@ public class MainWindowController {
     private int timeLeft;
     private boolean isResetting = false;
 
-    private TextRenderer textRenderer;
-
     @FXML
     public void initialize() {
         session.addObserver(new WpmObserver(wpmLabel));
         session.addObserver(new AccuracyObserver(accuracyLabel));
         session.addObserver(new ErrorObserver(errorsLabel));
 
-        textRenderer = new TextRenderer(textFlow);
-        textRenderer.showMessage("Оберіть режим щоб почати...");
-
         updateAuthBar();
 
+        Text placeholder = new Text("Оберіть режим щоб почати...");
+        placeholder.setFill(Color.web("#a9b7c6"));
+        placeholder.setStyle("-fx-font-size: 24px; -fx-font-family: 'Monospaced';");
+        textFlow.getChildren().add(placeholder);
+
         userInputField.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (isResetting) return;
+            if(isResetting) return;
 
             if (newVal.length() < oldVal.length()) {
                 isResetting = true;
@@ -78,7 +79,7 @@ public class MainWindowController {
                 return;
             }
 
-            textRenderer.render(currentText, newVal);
+            renderText(newVal);
             if (newVal.length() == 1) startTimer();
             session.onKeyTyped(newVal, currentText);
             if (session.isCompleted(newVal, currentText)) onSessionCompleted();
@@ -131,7 +132,12 @@ public class MainWindowController {
         if (timer != null) timer.stop();
 
         modeLabel.setText("Режим: " + session.getModeName() + " · Завантаження...");
-        textRenderer.showMessage("Завантаження тексту...");
+
+        Text loading = new Text("Завантаження тексту...");
+        loading.setFill(Color.web("#a9b7c6"));
+        loading.setStyle("-fx-font-size: 24px; -fx-font-family: 'Monospaced';");
+        textFlow.getChildren().clear();
+        textFlow.getChildren().add(loading);
 
         isResetting = true;
         userInputField.clear();
@@ -143,7 +149,7 @@ public class MainWindowController {
             String text = session.getText();
             Platform.runLater(() -> {
                 currentText = text;
-                textRenderer.render(currentText, "");
+                renderText("");
                 userInputField.setDisable(false);
                 userInputField.requestFocus();
             });
@@ -158,6 +164,29 @@ public class MainWindowController {
     @FXML
     private void handleRegistrationButtonClick(ActionEvent event) {
         openAuthWindow(event, true);
+    }
+
+    private void renderText(String typed) {
+        textFlow.getChildren().clear();
+
+        for (int i = 0; i < currentText.length(); i++) {
+            Text letter = new Text(String.valueOf(currentText.charAt(i)));
+            letter.setStyle("-fx-font-size: 24px; -fx-font-family: 'Monospaced';");
+
+            if (i < typed.length()) {
+                if (typed.charAt(i) == currentText.charAt(i)) {
+                    letter.setFill(Color.web("#629755"));
+                } else {
+                    letter.setFill(Color.web("#cc3232"));
+                }
+            } else if (i == typed.length()) {
+                letter.setFill(Color.web("#ffffff"));
+            } else {
+                letter.setFill(Color.web("#a9b7c6"));
+            }
+
+            textFlow.getChildren().add(letter);
+        }
     }
 
     private void openAuthWindow(ActionEvent event, boolean startOnRegister) {
