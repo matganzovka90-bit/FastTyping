@@ -1,11 +1,13 @@
 package speed.fasttyping.dao;
 
 import speed.fasttyping.model.User;
+import speed.fasttyping.util.PasswordHasher;
 
 import java.sql.*;
 
 public class UserDao {
     private Connection connection;
+    private final PasswordHasher hasher = new PasswordHasher();
 
     public UserDao(Connection connection) {
         this.connection = connection;
@@ -26,6 +28,8 @@ public class UserDao {
     }
 
     public void create(String username, String password) {
+        String hashedPassword = hasher.hash(password);
+
         String sql = """
                 INSERT INTO users (username, password)
                 VALUES (?, ?)""";
@@ -33,7 +37,7 @@ public class UserDao {
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
 
             pstmt.setString(1, username);
-            pstmt.setString(2, password);
+            pstmt.setString(2, hashedPassword);
 
             pstmt.executeUpdate();
             System.out.println("Користувач зареєстрований");
@@ -44,24 +48,24 @@ public class UserDao {
     }
 
     public User login(String username, String password) throws SQLException {
-        String sql = """
-                SELECT id, username FROM users
-                WHERE username = ? AND password = ?""";
+        String sql = "SELECT id, username, password FROM users WHERE username = ?";
 
-        try(PreparedStatement prsmt = connection.prepareStatement(sql)) {
-            prsmt.setString(1, username);
-            prsmt.setString(2, password);
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, username);
 
-            try(ResultSet rs = prsmt.executeQuery()) {
-                if(rs.next()) {
-                    return new User(
-                            rs.getInt("id"),
-                            rs.getString("username")
-                    );
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    String storedHash = rs.getString("password");
+
+                    if (hasher.verify(password, storedHash)) {
+                        return new User(
+                                rs.getInt("id"),
+                                rs.getString("username")
+                        );
+                    }
                 }
             }
         }
-
         return null;
     }
 
