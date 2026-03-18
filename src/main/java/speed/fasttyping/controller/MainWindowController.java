@@ -29,9 +29,9 @@ import speed.fasttyping.strategy.EasyStrategy;
 import speed.fasttyping.strategy.MarathonStrategy;
 import speed.fasttyping.strategy.TimeAttackStrategy;
 import speed.fasttyping.strategy.TypingSession;
+import speed.fasttyping.util.SceneNavigator;
 import speed.fasttyping.util.SessionManager;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -106,24 +106,8 @@ public class MainWindowController {
 
     @FXML
     private void handleStatsClick(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/speed/fasttyping/view/stats.fxml")
-            );
-            Parent root = loader.load();
-
-            Screen screen = Screen.getPrimary();
-            Rectangle2D bounds = screen.getVisualBounds();
-
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root, bounds.getWidth(), bounds.getHeight()));
-            stage.setTitle("Статистика");
-            stage.setMaximized(true);
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        SceneNavigator.navigateTo(stage, "stats.fxml", "Статистика");
     }
 
     @FXML
@@ -206,29 +190,27 @@ public class MainWindowController {
     }
 
     private void openAuthWindow(ActionEvent event, boolean startOnRegister) {
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/speed/fasttyping/view/auth.fxml")
-            );
-            Parent root = loader.load();
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
-            if (startOnRegister) {
+        if (startOnRegister) {
+            try {
+                FXMLLoader loader = new FXMLLoader(
+                        getClass().getResource("/speed/fasttyping/view/auth.fxml")
+                );
+                Parent root = loader.load();
                 AuthController authController = loader.getController();
                 authController.onRegisterTabClick();
+
+                Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
+                stage.setScene(new Scene(root, bounds.getWidth(), bounds.getHeight()));
+                stage.setTitle("Speed Typing — Акаунт");
+                stage.setMaximized(true);
+                stage.show();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
-            Screen screen = Screen.getPrimary();
-            Rectangle2D bounds = screen.getVisualBounds();
-
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root, bounds.getWidth(), bounds.getHeight()));
-            stage.setTitle("Speed Typing — Акаунт");
-            stage.setMaximized(true);
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Помилка при відкритті вікна авторизації: " + e.getMessage());
+        } else {
+            SceneNavigator.navigateTo(stage, "auth.fxml", "Speed Typing — Акаунт");
         }
     }
 
