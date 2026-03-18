@@ -19,7 +19,7 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import speed.fasttyping.dao.DatabaseConnection;
+import speed.fasttyping.dao.DaoFactory;
 import speed.fasttyping.dao.TypingResultDao;
 import speed.fasttyping.model.TypingResult;
 import speed.fasttyping.observer.AccuracyObserver;
@@ -32,7 +32,6 @@ import speed.fasttyping.strategy.TypingSession;
 import speed.fasttyping.util.SceneNavigator;
 import speed.fasttyping.util.SessionManager;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
 public class MainWindowController {
@@ -254,8 +253,8 @@ public class MainWindowController {
         );
 
         try{
-            Connection connection = DatabaseConnection.getInstance().getConnection();
-            TypingResultDao dao = new TypingResultDao(connection);
+            TypingResultDao dao = DaoFactory.getInstance().getTypingResultDao();
+
             dao.createTable();
             dao.save(result);
         } catch (SQLException e) {

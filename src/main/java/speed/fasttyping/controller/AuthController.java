@@ -6,13 +6,12 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import speed.fasttyping.dao.DatabaseConnection;
+import speed.fasttyping.dao.DaoFactory;
 import speed.fasttyping.dao.UserDao;
 import speed.fasttyping.model.User;
 import speed.fasttyping.util.SceneNavigator;
 import speed.fasttyping.util.SessionManager;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
 public class AuthController {
@@ -105,10 +104,9 @@ public class AuthController {
         if (!validateBasicFields(username, password)) return;
 
         try {
-            Connection conn = DatabaseConnection.getInstance().getConnection();
-            UserDao userDao = new UserDao(conn);
+            UserDao dao = DaoFactory.getInstance().getUserDao();
 
-            User user = userDao.login(username, password);
+            User user = dao.login(username, password);
 
             if (user == null) {
                 showError("Невірне ім'я або пароль");
@@ -145,15 +143,14 @@ public class AuthController {
         }
 
         try {
-            Connection conn = DatabaseConnection.getInstance().getConnection();
-            UserDao userDao = new UserDao(conn);
+            UserDao dao = DaoFactory.getInstance().getUserDao();
 
-            if (userDao.existsByUsername(username)) {
+            if (dao.existsByUsername(username)) {
                 showError("Користувач з таким іменем вже існує");
                 return;
             }
 
-            userDao.create(username, password);
+            dao.create(username, password);
 
             onLoginTabClick();
             usernameField.setText(username);
