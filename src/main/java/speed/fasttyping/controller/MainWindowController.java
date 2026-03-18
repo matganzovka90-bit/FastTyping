@@ -3,7 +3,6 @@ package speed.fasttyping.controller;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +13,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -32,11 +34,10 @@ import speed.fasttyping.util.SessionManager;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class MainWindowController {
-    @FXML private Label textToTypeLabel;
+    @FXML private TextFlow textFlow;
+    private String currentText = "";
     @FXML private Label modeLabel;
     @FXML private Label wpmLabel;
     @FXML private Label errorsLabel;
@@ -59,17 +60,27 @@ public class MainWindowController {
 
         updateAuthBar();
 
+        Text placeholder = new Text("Оберіть режим щоб почати...");
+        placeholder.setFill(Color.web("#a9b7c6"));
+        placeholder.setStyle("-fx-font-size: 24px; -fx-font-family: 'Monospaced';");
+        textFlow.getChildren().add(placeholder);
+
         userInputField.setOnKeyTyped(e -> {
             String typed = userInputField.getText();
-            String expected = textToTypeLabel.getText();
 
-            if(typed.length() == 1)
-                startTimer();
+            renderText(typed);
 
-            session.onKeyTyped(typed, expected);
+            if (typed.length() == 1) startTimer();
+            session.onKeyTyped(typed, currentText);
 
-            if(session.isCompleted(typed, expected)) {
+            if (session.isCompleted(typed, currentText)) {
                 onSessionCompleted();
+            }
+        });
+
+        userInputField.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal.length() < oldVal.length()) {
+                Platform.runLater(() -> userInputField.setText(oldVal));
             }
         });
     }
@@ -136,20 +147,26 @@ public class MainWindowController {
         if (timer != null) timer.stop();
 
         modeLabel.setText("Режим: " + session.getModeName() + " · Завантаження...");
-        textToTypeLabel.setText("Завантаження тексту...");
+
+        Text loading = new Text("Завантаження тексту...");
+        loading.setFill(Color.web("#a9b7c6"));
+        loading.setStyle("-fx-font-size: 24px; -fx-font-family: 'Monospaced';");
+        textFlow.getChildren().clear();
+        textFlow.getChildren().add(loading);
+
         userInputField.clear();
         userInputField.setDisable(true);
 
         new Thread(() -> {
             String text = session.getText();
             Platform.runLater(() -> {
-                textToTypeLabel.setText(text);
+                currentText = text;
+                renderText("");
                 userInputField.setDisable(false);
                 userInputField.requestFocus();
             });
         }).start();
     }
-
 
     @FXML
     private void handleLoginButtonClick(ActionEvent event) {
@@ -159,6 +176,29 @@ public class MainWindowController {
     @FXML
     private void handleRegistrationButtonClick(ActionEvent event) {
         openAuthWindow(event, true);
+    }
+
+    private void renderText(String typed) {
+        textFlow.getChildren().clear();
+
+        for (int i = 0; i < currentText.length(); i++) {
+            Text letter = new Text(String.valueOf(currentText.charAt(i)));
+            letter.setStyle("-fx-font-size: 24px; -fx-font-family: 'Monospaced';");
+
+            if (i < typed.length()) {
+                if (typed.charAt(i) == currentText.charAt(i)) {
+                    letter.setFill(Color.web("#629755"));
+                } else {
+                    letter.setFill(Color.web("#cc3232"));
+                }
+            } else if (i == typed.length()) {
+                letter.setFill(Color.web("#ffffff"));
+            } else {
+                letter.setFill(Color.web("#a9b7c6"));
+            }
+
+            textFlow.getChildren().add(letter);
+        }
     }
 
     private void openAuthWindow(ActionEvent event, boolean startOnRegister) {
