@@ -5,6 +5,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
 public class TextRenderer {
+
     private static final String FONT_STYLE = "-fx-font-size: 24px; -fx-font-family: 'Monospaced';";
     private static final Color COLOR_CORRECT = Color.web("#629755");
     private static final Color COLOR_ERROR = Color.web("#cc3232");
