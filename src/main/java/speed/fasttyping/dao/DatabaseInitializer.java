@@ -13,5 +13,6 @@ public class DatabaseInitializer {
     public void initialize() throws SQLException {
         new UserDao(connection).createUserTable();
         new TypingResultDao(connection).createTable();
+        new AchievementDao(connection).createTable();
     }
 }
