@@ -19,8 +19,11 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import speed.fasttyping.dao.AchievementDao;
 import speed.fasttyping.dao.DaoFactory;
 import speed.fasttyping.dao.TypingResultDao;
+import speed.fasttyping.model.Achievement;
+import speed.fasttyping.model.AchievementContext;
 import speed.fasttyping.model.TypingResult;
 import speed.fasttyping.observer.AccuracyObserver;
 import speed.fasttyping.observer.ErrorObserver;
@@ -29,10 +32,13 @@ import speed.fasttyping.strategy.EasyStrategy;
 import speed.fasttyping.strategy.MarathonStrategy;
 import speed.fasttyping.strategy.TimeAttackStrategy;
 import speed.fasttyping.strategy.TypingSession;
+import speed.fasttyping.util.AchievementManager;
 import speed.fasttyping.util.SceneNavigator;
 import speed.fasttyping.util.SessionManager;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainWindowController {
     @FXML private TextFlow textFlow;
@@ -255,10 +261,43 @@ public class MainWindowController {
         try{
             TypingResultDao dao = DaoFactory.getInstance().getTypingResultDao();
 
-            dao.createTable();
             dao.save(result);
+
+            int totalSessions = dao.getByUserId(userId).size();
+
+            AchievementContext context = new AchievementContext(
+                    session.getLastWpm(),
+                    session.getLastAccuracy(),
+                    session.getLastErrors(),
+                    currentText.length(),
+                    session.getModeName(),
+                    totalSessions
+            );
+
+            List<Achievement> unlocked = AchievementManager.getInstance()
+                    .checkAndUnlock(context, userId);
+
+            if(!unlocked.isEmpty()) {
+                showAchievementPopups(unlocked, 0);
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private void showAchievementPopups(List<Achievement> list, int index) {
+        if (index >= list.size()) return;
+
+        Achievement a = list.get(index);
+
+        Platform.runLater(() -> {
+            modeLabel.setText("🏆 " + a.getTitle() + " — " + a.getDescription());
+        });
+
+        new Timeline(new KeyFrame(Duration.seconds(3), e -> {
+            modeLabel.setText("Режим: " + session.getModeName());
+            showAchievementPopups(list, index + 1);
+        })).play();
     }
 }
