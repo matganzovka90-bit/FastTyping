@@ -30,4 +30,6 @@ public class DaoFactory {
     public TypingResultDao getTypingResultDao() {
         return new TypingResultDao(connection);
     }
+
+    public AchievementDao getAchievementDao() { return new AchievementDao(connection); }
 }
