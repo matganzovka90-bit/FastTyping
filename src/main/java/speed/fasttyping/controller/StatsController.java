@@ -57,7 +57,6 @@ public class StatsController {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         SceneNavigator.navigateTo(stage, "main.fxml", "Тренажер сліпого друку");
     }
-
     private void setupColumns() {
         wpmColumn.setCellValueFactory(cell ->
                 new javafx.beans.property.SimpleIntegerProperty(cell.getValue().getWpm()).asObject());
