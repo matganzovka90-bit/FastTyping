@@ -52,6 +52,8 @@ public class MainWindowController {
     @FXML private Button loginBtn;
     @FXML private Button registerBtn;
 
+    @FXML private Label achievementPopup;
+
     private final TypingSession session = new TypingSession(new EasyStrategy());
 
     private Timeline timer;
@@ -292,12 +294,18 @@ public class MainWindowController {
         Achievement a = list.get(index);
 
         Platform.runLater(() -> {
-            modeLabel.setText("🏆 " + a.getTitle() + " — " + a.getDescription());
+            achievementPopup.setText(a.getIcon() + "  " + a.getTitle() + "\n" + a.getDescription());
+            achievementPopup.setVisible(true);
+            achievementPopup.setManaged(true);
         });
 
         new Timeline(new KeyFrame(Duration.seconds(3), e -> {
-            modeLabel.setText("Режим: " + session.getModeName());
-            showAchievementPopups(list, index + 1);
+            achievementPopup.setVisible(false);
+            achievementPopup.setManaged(false);
+
+            new Timeline(new KeyFrame(Duration.millis(500), e2 ->
+                    showAchievementPopups(list, index + 1)
+            )).play();
         })).play();
     }
 }

@@ -60,6 +60,20 @@
     <Label fx:id="modeLabel"
            style="-fx-text-fill: #555555; -fx-font-size: 12px;"/>
 
+    <Label fx:id="achievementPopup"
+           text=""
+           visible="false"
+           managed="false"
+           style="-fx-background-color: #1e3a1e;
+              -fx-border-color: #629755;
+              -fx-border-width: 2;
+              -fx-border-radius: 12;
+              -fx-background-radius: 12;
+              -fx-text-fill: #c5e1a5;
+              -fx-font-size: 16px;
+              -fx-font-weight: bold;
+              -fx-padding: 14 20 14 20;"/>
+
     <VBox spacing="30" alignment="CENTER" VBox.vgrow="ALWAYS">
         <StackPane style="-fx-background-color: #3c3f41; -fx-background-radius: 15; -fx-padding: 25;">
             <TextFlow fx:id="textFlow"

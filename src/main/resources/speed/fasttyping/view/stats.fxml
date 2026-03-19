@@ -64,4 +64,24 @@
         </columnResizePolicy>
     </TableView>
     </VBox>
+
+    <VBox spacing="10">
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <Label text="ДОСЯГНЕННЯ"
+                   style="-fx-text-fill: #777777; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+            <Label fx:id="achievementsCountLabel" text="0 / 0"
+                   style="-fx-text-fill: #a9b7c6; -fx-font-size: 12px;"/>
+        </HBox>
+
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+                    style="-fx-background: transparent; -fx-background-color: transparent;"
+                    prefHeight="200">
+            <FlowPane fx:id="achievementsPane" hgap="12" vgap="12"
+                      style="-fx-background-color: transparent;">
+                <padding>
+                    <Insets top="4" right="4" bottom="4" left="4"/>
+                </padding>
+            </FlowPane>
+        </ScrollPane>
+    </VBox>
 </VBox>

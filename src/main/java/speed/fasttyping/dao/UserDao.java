@@ -40,7 +40,6 @@ public class UserDao {
             pstmt.setString(2, hashedPassword);
 
             pstmt.executeUpdate();
-            System.out.println("Користувач зареєстрований");
         } catch (Exception e) {
             System.err.println("Помилка при збереженні: " + e.getMessage());
             e.printStackTrace();

@@ -45,7 +45,7 @@ public class AchievementManager {
         );
         register(
                 new Achievement("marathon_no_errors", "Марафонець", "Пройдіть марафон без помилок", "🏃"),
-                context -> "Марафон".equals(context.getModeName()) && context.getErrors() == 0
+                context -> "Marathon".equals(context.getModeName()) && context.getErrors() == 0
         );
         register(
                 new Achievement("sessions_10", "Практик", "Завершіть 10 сесій", "📚"),
@@ -61,7 +61,7 @@ public class AchievementManager {
         );
         register(
                 new Achievement("time_attack_win", "Переможець часу", "Завершіть атаку часу", "⏱️"),
-                context -> "Атака часу".equals(context.getModeName())
+                context -> "Time attack".equals(context.getModeName())
         );
     }
 
@@ -114,14 +114,6 @@ public class AchievementManager {
 
     public List<Achievement> getAllAchievements() {
         return Collections.unmodifiableList(achievements);
-    }
-
-    public List<Achievement> getUnlockedAchievements() {
-        List<Achievement> unlocked = new ArrayList<>();
-        for (Achievement a : achievements) {
-            if (a.isUnlocked()) unlocked.add(a);
-        }
-        return unlocked;
     }
 
     public int getUnlockedCount() {
