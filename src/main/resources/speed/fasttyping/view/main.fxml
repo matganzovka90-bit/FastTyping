@@ -7,6 +7,7 @@
 <?import javafx.scene.control.Button?>
 
 <?import javafx.scene.text.TextFlow?>
+<?import javafx.scene.control.ToggleButton?>
 <VBox spacing="20" alignment="TOP_CENTER" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="speed.fasttyping.controller.MainWindowController"
       style="-fx-background-color: #2b2b2b;"
@@ -55,6 +56,17 @@
                        -fx-font-size: 14px; -fx-font-weight: bold;
                        -fx-cursor: hand; -fx-background-radius: 8;
                        -fx-pref-width: 140; -fx-pref-height: 38;"/>
+
+        <ToggleButton fx:id="langToggle"
+                      text="en EN"
+                      onAction="#handleLangToggle"
+                      style="-fx-background-color: #3c3f41;
+                         -fx-text-fill: #a9b7c6;
+                         -fx-font-size: 14px;
+                         -fx-cursor: hand;
+                         -fx-background-radius: 8;
+                         -fx-pref-width: 90;
+                         -fx-pref-height: 38;"/>
     </HBox>
 
     <Label fx:id="modeLabel"
