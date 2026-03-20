@@ -8,6 +8,10 @@ public class MarathonStrategy implements TypingStrategy {
         return TextProvider.fetchMultipleQuotes(5);
     }
 
+    public String getUkrainianText() {
+        return TextProvider.fetchMultipleUkrainianQuotes(5);
+    }
+
     @Override
     public int getDurationTime() {
         return 180;

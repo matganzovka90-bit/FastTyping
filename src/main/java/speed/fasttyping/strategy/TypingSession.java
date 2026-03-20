@@ -113,6 +113,10 @@ public class TypingSession {
         return strategy.getText();
     }
 
+    public String getUkrainianText() {
+        return strategy.getUkrainianText();
+    }
+
     public int getDurationSeconds() {
         return strategy.getDurationTime();
     }

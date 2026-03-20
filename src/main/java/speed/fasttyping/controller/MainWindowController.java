@@ -13,6 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -61,6 +62,10 @@ public class MainWindowController {
     private boolean isResetting = false;
 
     @FXML
+    private ToggleButton langToggle;
+    private boolean isUkrainian = false;
+
+    @FXML
     public void initialize() {
         session.addObserver(new WpmObserver(wpmLabel));
         session.addObserver(new AccuracyObserver(accuracyLabel));
@@ -91,6 +96,12 @@ public class MainWindowController {
             session.onKeyTyped(newVal, currentText);
             if (session.isCompleted(newVal, currentText)) onSessionCompleted();
         });
+    }
+
+    @FXML
+    private void handleLangToggle() {
+        isUkrainian = langToggle.isSelected();
+        langToggle.setText(isUkrainian ? "ua UA" : "en EN");
     }
 
     private void updateAuthBar() {
@@ -153,7 +164,10 @@ public class MainWindowController {
         userInputField.setDisable(true);
 
         new Thread(() -> {
-            String text = session.getText();
+            String text = isUkrainian
+                    ? session.getUkrainianText()
+                    : session.getText();
+
             Platform.runLater(() -> {
                 currentText = text;
                 renderText("");

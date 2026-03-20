@@ -10,6 +10,11 @@ public class TimeAttackStrategy implements TypingStrategy {
     }
 
     @Override
+    public String getUkrainianText() {
+        return TextProvider.fetchMultipleUkrainianQuotes(3);
+    }
+
+    @Override
     public int getDurationTime() {
         return 60;
     }
