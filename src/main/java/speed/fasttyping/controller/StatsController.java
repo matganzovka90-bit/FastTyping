@@ -47,11 +47,8 @@ public class StatsController {
         loadStats();
         loadAchievements();
     }
-    @FXML
-    private void handleBackClick(ActionEvent event) {
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        SceneNavigator.navigateTo(stage, "main.fxml", "Тренажер сліпого друку");
-    }
+
+
     private void setupColumns() {
         wpmColumn.setCellValueFactory(cell ->
                 new javafx.beans.property.SimpleIntegerProperty(cell.getValue().getWpm()).asObject());
@@ -173,6 +170,7 @@ public class StatsController {
         Tooltip.install(card, tip);
 
         return card;
+    }
 
     private void updateTable(List<TypingResult> results) {
         resultsTable.setItems(FXCollections.observableArrayList(results));
@@ -193,7 +191,7 @@ public class StatsController {
     }
 
     @FXML
-    private void handleBackClick(ActionEvent event) {
+    private void handleBackClick (ActionEvent event) {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         SceneNavigator.navigateTo(stage, "main.fxml", "Тренажер сліпого друку");
     }
