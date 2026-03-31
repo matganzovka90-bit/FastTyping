@@ -1,5 +1,8 @@
 package speed.fasttyping.strategy;
 
+import javafx.scene.control.TextField;
+import javafx.scene.text.TextFlow;
+
 public interface TypingStrategy {
     String getText();
     int getDurationTime();
@@ -8,4 +11,6 @@ public interface TypingStrategy {
     default String getUkrainianText() {
         return getText();
     }
+
+    default void onTextLoaded(TextFlow textFlow, TextField inputField, Runnable onVanish){}
 }

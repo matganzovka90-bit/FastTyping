@@ -124,4 +124,8 @@ public class TypingSession {
     public String getModeName() {
         return strategy.getModeName();
     }
+
+    public TypingStrategy getStrategy() {
+        return strategy;
+    }
 }
