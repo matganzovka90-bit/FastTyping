@@ -57,6 +57,12 @@
                        -fx-cursor: hand; -fx-background-radius: 8;
                        -fx-pref-width: 140; -fx-pref-height: 38;"/>
 
+        <Button text="Vanishing" onAction="#handleVanishingMode"
+                style="-fx-background-color: #4fab92; -fx-text-fill: white;
+                       -fx-font-size: 14px; -fx-font-weight: bold;
+                       -fx-cursor: hand; -fx-background-radius: 8;
+                       -fx-pref-width: 140; -fx-pref-height: 38;"/>
+
         <ToggleButton fx:id="langToggle"
                       text="en EN"
                       onAction="#handleLangToggle"
