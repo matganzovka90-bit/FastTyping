@@ -63,6 +63,40 @@ public class AchievementManager {
                 new Achievement("time_attack_win", "Переможець часу", "Завершіть атаку часу", "⏱️"),
                 context -> "Time attack".equals(context.getModeName())
         );
+        register(
+                new Achievement("speed_120", "Надзвуковий", "Досягніть 120 WPM", "🌪️"),
+                context -> context.getWpm() >= 120
+        );
+        register(
+                new Achievement("speed_150", "Бог клавіатури", "Досягніть 150 WPM", "👑"),
+                context -> context.getWpm() >= 150
+        );
+
+        register(
+                new Achievement("char_1000", "Друкарська машинка", "Надрукуйте сумарно 1 000 символів", "⌨️"),
+                context -> context.getTotalCharsTyped() >= 1000
+        );
+        register(
+                new Achievement("char_10000", "Автор романів", "Надрукуйте сумарно 10 000 символів", "📖"),
+                context -> context.getTotalCharsTyped() >= 10000
+        );
+        register(
+                new Achievement("consistent_98", "Стабільність", "Завершіть сесію з точністю 98% при швидкості 80+ WPM", "📊"),
+                context -> context.getAccuracy() >= 98.0 && context.getWpm() >= 80
+        );
+
+        register(
+                new Achievement("easy_pro", "Легка розминка", "Завершіть EasyStrategy без жодної помилки", "👶"),
+                context -> "Easy".equals(context.getModeName()) && context.getErrors() == 0
+        );
+        register(
+                new Achievement("vanishing_master", "Примарні літери", "Завершіть VanishingStrategy з точністю 90%+", "👻"),
+                context -> "Vanishing".equals(context.getModeName()) && context.getAccuracy() >= 90.0
+        );
+        register(
+                new Achievement("sessions_100", "Легенда", "Завершіть 100 сесій", "🌠"),
+                context -> context.getTotalSessions() >= 100
+        );
     }
 
     private void register(Achievement achievement, AchievementCondition condition) {
