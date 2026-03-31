@@ -29,10 +29,7 @@ import speed.fasttyping.model.TypingResult;
 import speed.fasttyping.observer.AccuracyObserver;
 import speed.fasttyping.observer.ErrorObserver;
 import speed.fasttyping.observer.WpmObserver;
-import speed.fasttyping.strategy.EasyStrategy;
-import speed.fasttyping.strategy.MarathonStrategy;
-import speed.fasttyping.strategy.TimeAttackStrategy;
-import speed.fasttyping.strategy.TypingSession;
+import speed.fasttyping.strategy.*;
 import speed.fasttyping.util.AchievementManager;
 import speed.fasttyping.util.SceneNavigator;
 import speed.fasttyping.util.SessionManager;
@@ -61,9 +58,18 @@ public class MainWindowController {
     private int timeLeft;
     private boolean isResetting = false;
 
+    private Timeline vanishTamer;
+    private boolean textVanished = false;
+
     @FXML
     private ToggleButton langToggle;
     private boolean isUkrainian = false;
+
+    @FXML
+    private void handleVanishingMode() {
+        session.setStrategy(new VanishingStrategy(3));
+        loadText();
+    }
 
     @FXML
     public void initialize() {
@@ -170,9 +176,11 @@ public class MainWindowController {
 
             Platform.runLater(() -> {
                 currentText = text;
+                textVanished = false;
                 renderText("");
                 userInputField.setDisable(false);
                 userInputField.requestFocus();
+                session.getStrategy().onTextLoaded(textFlow, userInputField, () -> textVanished = true);
             });
         }).start();
     }
@@ -202,6 +210,8 @@ public class MainWindowController {
                 }
             } else if (i == typed.length()) {
                 letter.setFill(Color.web("#ffffff"));
+            } else if (textVanished) {
+                letter.setFill(Color.TRANSPARENT);
             } else {
                 letter.setFill(Color.web("#a9b7c6"));
             }
@@ -209,7 +219,6 @@ public class MainWindowController {
             textFlow.getChildren().add(letter);
         }
     }
-
     private void openAuthWindow(ActionEvent event, boolean startOnRegister) {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
