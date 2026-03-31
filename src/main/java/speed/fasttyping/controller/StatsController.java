@@ -5,6 +5,8 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.LineChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
@@ -14,6 +16,7 @@ import speed.fasttyping.dao.TypingResultDao;
 import speed.fasttyping.model.Achievement;
 import speed.fasttyping.model.TypingResult;
 import speed.fasttyping.util.AchievementManager;
+import speed.fasttyping.util.ChartBuilder;
 import speed.fasttyping.util.SceneNavigator;
 import speed.fasttyping.util.SessionManager;
 
@@ -39,6 +42,10 @@ public class StatsController {
 
     @FXML private Label    achievementsCountLabel;
     @FXML private FlowPane achievementsPane;
+
+    @FXML private LineChart<String, Number> wpmChart;
+    @FXML private BarChart<String, Number> errorsChart;
+    @FXML private BarChart<String, Number> accuracyChart;
 
     @FXML
     public void initialize() {
@@ -174,6 +181,25 @@ public class StatsController {
 
     private void updateTable(List<TypingResult> results) {
         resultsTable.setItems(FXCollections.observableArrayList(results));
+
+        if (!results.isEmpty()) {
+            ChartBuilder.buildWpmChart(wpmChart, results);
+            ChartBuilder.buildAccuracyChart(accuracyChart, results);
+            ChartBuilder.buildErrorsChart(errorsChart, results);
+
+            applyFadeAnimation(wpmChart);
+            applyFadeAnimation(accuracyChart);
+            applyFadeAnimation(errorsChart);
+        }
+    }
+
+    private void applyFadeAnimation(Node node) {
+        javafx.animation.FadeTransition ft = new javafx.animation.FadeTransition(
+                javafx.util.Duration.millis(500), node
+        );
+        ft.setFromValue(0.3);
+        ft.setToValue(1.0);
+        ft.play();
     }
 
     private void updateSummary(TypingResultDao dao, int userId, List<TypingResult> results) throws SQLException {
