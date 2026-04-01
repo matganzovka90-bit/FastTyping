@@ -17,56 +17,47 @@ public class UserDao {
         String sql = """
             CREATE TABLE IF NOT EXISTS users (
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                username VARCHAR(50) NOT NULL,
+                username VARCHAR(50) NOT NULL UNIQUE,
                 password VARCHAR(100) NOT NULL,
-                is_remembered TINYINT DEFAULT 0
+                is_remembered TINYINT DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """;
-
         try (Statement stmt = connection.createStatement()) {
             stmt.execute(sql);
         }
     }
 
-    public void create(String username, String password) {
-        String hashedPassword = hasher.hash(password);
-
-        String sql = """
-                INSERT INTO users (username, password)
-                VALUES (?, ?)""";
-
+    public void create(String username, String password) throws SQLException {
+        String sql = "INSERT INTO users (username, password) VALUES (?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-
             pstmt.setString(1, username);
-            pstmt.setString(2, hashedPassword);
-
+            pstmt.setString(2, hasher.hash(password));
             pstmt.executeUpdate();
-        } catch (Exception e) {
-            System.err.println("Помилка при збереженні: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
     public User login(String username, String password) throws SQLException {
         String sql = "SELECT id, username, password FROM users WHERE username = ?";
-
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, username);
-
             try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    String storedHash = rs.getString("password");
-
-                    if (hasher.verify(password, storedHash)) {
-                        return new User(
-                                rs.getInt("id"),
-                                rs.getString("username")
-                        );
-                    }
+                if (rs.next() && hasher.verify(password, rs.getString("password"))) {
+                    return new User(rs.getInt("id"), rs.getString("username"));
                 }
             }
         }
         return null;
+    }
+
+    public boolean existsByUsername(String username) throws SQLException {
+        String sql = "SELECT id FROM users WHERE username = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next();
+            }
+        }
     }
 
     public void setRememberMe(int userId, boolean remember) throws SQLException {
@@ -89,17 +80,34 @@ public class UserDao {
         return null;
     }
 
-    public boolean existsByUsername(String username) throws SQLException {
-        String sql = """
-                SELECT id FROM users
-                WHERE username = ?""";
+    public void updateUsername(int userId, String newUsername) throws SQLException {
+        String sql = "UPDATE users SET username = ? WHERE id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, newUsername);
+            pstmt.setInt(2, userId);
+            pstmt.executeUpdate();
+        }
+    }
 
-        try(PreparedStatement prsmt = connection.prepareStatement(sql)) {
-            prsmt.setString(1, username);
-
-            try(ResultSet rs = prsmt.executeQuery()) {
-                return rs.next();
+    public boolean verifyPassword(int userId, String password) throws SQLException {
+        String sql = "SELECT password FROM users WHERE id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return hasher.verify(password, rs.getString("password"));
+                }
             }
+        }
+        return false;
+    }
+
+    public void updatePassword(int userId, String newPassword) throws SQLException {
+        String sql = "UPDATE users SET password = ? WHERE id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, hasher.hash(newPassword));
+            pstmt.setInt(2, userId);
+            pstmt.executeUpdate();
         }
     }
 }
