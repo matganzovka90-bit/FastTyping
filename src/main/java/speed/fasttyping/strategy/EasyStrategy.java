@@ -1,0 +1,24 @@
+package speed.fasttyping.strategy;
+
+import speed.fasttyping.util.TextProvider;
+
+public class EasyStrategy implements TypingStrategy {
+    @Override
+    public String getText() {
+        return TextProvider.fetchRandomQuote();
+    }
+
+    @Override
+    public String getUkrainianText() {
+        return TextProvider.fetchUkrainianQuote();
+    }
+
+    @Override
+    public int getDurationTime() {
+        return 0;
+    }
+    @Override
+    public String getModeName() {
+        return "Easy";
+    }
+}
