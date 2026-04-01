@@ -80,7 +80,9 @@
                     style="-fx-background-color: #4b6eaf; -fx-text-fill: white;
                            -fx-font-size: 15px; -fx-font-weight: bold;
                            -fx-pref-height: 46; -fx-background-radius: 8; -fx-cursor: hand;"/>
-
+            <CheckBox fx:id="rememberMeCheckBox"
+                      text="Запам'ятати мене"
+                      style="-fx-text-fill: #777777; -fx-font-size: 14px; -fx-cursor: hand;" />
             <Button text="← Назад"
                     onAction="#onBackClick"
                     style="-fx-background-color: transparent; -fx-text-fill: #555555;
