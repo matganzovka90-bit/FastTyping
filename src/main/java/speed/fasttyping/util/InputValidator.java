@@ -6,6 +6,7 @@ public class InputValidator {
     private static final int MIN_PASSWORD_LENGTH = 6;
     private static final int MAX_USERNAME_LENGTH = 50;
     private static final int MIN_USERNAME_LENGTH = 3;
+    private static final int MAX_PASSWORD_LENGTH = 50;
 
     public Optional<String> validateUsername(String username) {
         if (username == null || username.isBlank()) {
@@ -58,5 +59,28 @@ public class InputValidator {
         if (basicError.isPresent()) return basicError;
 
         return validateConfirmPassword(password, confirm);
+    }
+
+    public Optional<String> validatePasswordStrength(String password) {
+        if (!password.matches(".*[A-Z].*")) {
+            return Optional.of("Пароль має містити хоча б одну велику літеру");
+        }
+        if (!password.matches(".*[0-9].*")) {
+            return Optional.of("Пароль має містити хоча б одну цифру");
+        }
+        if (password.length() > MAX_PASSWORD_LENGTH) {
+            return Optional.of("Пароль має бути максимум " + MAX_PASSWORD_LENGTH + " символів");
+        }
+        return Optional.empty();
+    }
+
+    public Optional<String> validateNewPassword(String newPassword, String confirm) {
+        Optional<String> lengthError = validatePassword(newPassword);
+        if (lengthError.isPresent()) return lengthError;
+
+        Optional<String> strengthError = validatePasswordStrength(newPassword);
+        if (strengthError.isPresent()) return strengthError;
+
+        return validateConfirmPassword(newPassword, confirm);
     }
 }
