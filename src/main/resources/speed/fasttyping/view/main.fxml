@@ -22,6 +22,9 @@
                 onAction="#handleStatsClick"
                 style="-fx-background-color: transparent; -fx-text-fill: #4b6eaf; -fx-cursor: hand; -fx-font-size: 14px; -fx-underline: true;"/>
 
+        <Button text="Мій профіль" onAction="#onProfileClick"
+                style="-fx-background-color: #3c3f41; -fx-text-fill: #4b6eaf;
+                   -fx-border-color: #4b6eaf; -fx-border-radius: 5; -fx-cursor: hand;"/>
         <Label text="|" style="-fx-text-fill: #555555;"/>
 
         <Button fx:id="loginBtn"
