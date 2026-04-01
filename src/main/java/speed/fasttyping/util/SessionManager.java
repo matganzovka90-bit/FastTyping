@@ -57,6 +57,12 @@ public class SessionManager {
         this.currentUser = null;
     }
 
+    public void updateUsername(String newUsername) {
+        if (currentUser != null) {
+            currentUser.setUsername(newUsername);
+        }
+    }
+
     public User getCurrentUser() {
         return currentUser;
     }
