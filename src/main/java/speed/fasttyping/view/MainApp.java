@@ -9,6 +9,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import speed.fasttyping.dao.DatabaseConnection;
 import speed.fasttyping.dao.DatabaseInitializer;
+import speed.fasttyping.util.SessionManager;
 
 import java.sql.Connection;
 
@@ -16,20 +17,28 @@ import java.sql.Connection;
 public class MainApp extends Application {
     @Override
     public void start(Stage stage) throws Exception {
-        FXMLLoader fxmlLoader = new FXMLLoader(
-                getClass().getResource("main.fxml")
-        );
-
         Connection conn = DatabaseConnection.getInstance().getConnection();
         new DatabaseInitializer(conn).initialize();
 
-        Parent root = fxmlLoader.load();
         Screen screen = Screen.getPrimary();
         Rectangle2D bounds = screen.getVisualBounds();
 
+        String fxml;
+        String title;
+
+        if (SessionManager.getInstance().tryAutoLogin()) {
+            fxml = "main.fxml";
+            title = "Тренажер сліпого друку";
+        } else {
+            fxml = "auth.fxml";
+            title = "Вхід";
+        }
+
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fxml));
+        Parent root = fxmlLoader.load();
         Scene scene = new Scene(root, bounds.getWidth(), bounds.getHeight());
 
-        stage.setTitle("Тренажер сліпого друку");
+        stage.setTitle(title);
         stage.setScene(scene);
         stage.setMaximized(true);
         stage.show();
