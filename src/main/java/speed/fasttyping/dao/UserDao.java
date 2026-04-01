@@ -18,7 +18,8 @@ public class UserDao {
             CREATE TABLE IF NOT EXISTS users (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 username VARCHAR(50) NOT NULL,
-                password VARCHAR(100) NOT NULL
+                password VARCHAR(100) NOT NULL,
+                is_remembered TINYINT DEFAULT 0
             )
         """;
 
@@ -63,6 +64,26 @@ public class UserDao {
                         );
                     }
                 }
+            }
+        }
+        return null;
+    }
+
+    public void setRememberMe(int userId, boolean remember) throws SQLException {
+        String sql = "UPDATE users SET is_remembered = ? WHERE id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, remember ? 1 : 0);
+            pstmt.setInt(2, userId);
+            pstmt.executeUpdate();
+        }
+    }
+
+    public User findRememberedUser() throws SQLException {
+        String sql = "SELECT id, username FROM users WHERE is_remembered = 1 LIMIT 1";
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                return new User(rs.getInt("id"), rs.getString("username"));
             }
         }
         return null;
