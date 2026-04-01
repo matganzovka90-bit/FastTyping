@@ -30,6 +30,8 @@ public class AuthController {
     @FXML private VBox confirmBox;
     @FXML private Button submitBtn;
 
+    @FXML private CheckBox rememberMeCheckBox;
+
     private boolean isLoginMode = true;
     private final InputValidator validator = new InputValidator();
 
@@ -62,6 +64,7 @@ public class AuthController {
         submitBtn.setText("Увійти");
 
         confirmBox.setVisible(false);
+        rememberMeCheckBox.setVisible(true);
         confirmBox.setManaged(false);
     }
 
@@ -79,6 +82,7 @@ public class AuthController {
         submitBtn.setText("Зареєструватися");
 
         confirmBox.setVisible(true);
+        rememberMeCheckBox.setVisible(false);
         confirmBox.setManaged(true);
     }
 
@@ -115,13 +119,12 @@ public class AuthController {
             if (user == null) {
                 showError("Невірне ім'я або пароль");
             } else {
-                SessionManager.getInstance().login(user);
+                boolean rememberMe = rememberMeCheckBox.isSelected();
+                SessionManager.getInstance().login(user, rememberMe);
                 goToMain();
             }
-
         } catch (SQLException e) {
-            showError("Помилка з'єднання з базою даних");
-            e.printStackTrace();
+            showError("Помилка з'єднання");
         }
     }
 
