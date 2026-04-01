@@ -191,6 +191,12 @@ public class MainWindowController {
     }
 
     @FXML
+    private void onProfileClick(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        SceneNavigator.navigateTo(stage, "profile.fxml", "Профіль користувача");
+    }
+
+    @FXML
     private void handleRegistrationButtonClick(ActionEvent event) {
         openAuthWindow(event, true);
     }
