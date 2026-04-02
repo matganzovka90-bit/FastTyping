@@ -46,7 +46,6 @@
 1.  **Strategy Pattern**: Реалізовано через інтерфейс [`TypingStrategy`](https://github.com/matganzovka90-bit/FastTyping/blob/main/src/main/java/speed/fasttyping/strategy/TypingStrategy.java). Це дозволяє легко перемикати логіку різних режимів друку під час виконання програми.
 2.  **Observer Pattern**: Використовується для оновлення UI. [`TypingSession`](https://github.com/matganzovka90-bit/FastTyping/blob/main/src/main/java/speed/fasttyping/strategy/TypingStrategy.java) повідомляє підписників (`WpmObserver`, `AccuracyObserver`), коли змінюються показники.
 3.  **Singleton Pattern**: Застосовано в [`SessionManager`](https://github.com/matganzovka90-bit/FastTyping/blob/main/src/main/java/speed/fasttyping/util/SessionManager.java) та [`DatabaseConnection`](https://github.com/matganzovka90-bit/FastTyping/blob/main/src/main/java/speed/fasttyping/dao/DatabaseConnection.java) для забезпечення єдиної точки доступу до ресурсів.
-4.  **Factory Pattern**: [`DaoFactory`](https://github.com/matganzovka90-bit/FastTyping/blob/main/src/main/java/speed/fasttyping/dao/DaoFactory.java) централізовано створює об'єкти доступу до даних, приховуючи логіку їх ініціалізації.
 
 ---
 
