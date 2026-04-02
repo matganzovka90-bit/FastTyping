@@ -1,10 +1,10 @@
-# ⌨️ FastTyping — JavaFX Typing Trainer
+# FastTyping — JavaFX Typing Trainer
 
 **FastTyping** — це десктопний тренажер сліпого друку, розроблений на Java. Застосунок допомагає користувачам покращити швидкість і точність набору тексту, відстежувати прогрес через детальну статистику та отримувати ігрові досягнення.
 
 ---
 
-## 🚀 Основний функціонал
+## Основний функціонал
 
 * **Чотири режими тренування:**
     * [`Easy`](https://github.com/matganzovka90-bit/FastTyping/blob/main/src/main/java/speed/fasttyping/strategy/EasyStrategy.java): Базовий режим з однією цитатою.
@@ -19,7 +19,7 @@
 
 ---
 
-## 🛠 Технологічний стек
+## Технологічний стек
 
 * **Мова:** Java 21+
 * **UI:** JavaFX (FXML, CSS)
@@ -29,7 +29,7 @@
 
 ---
 
-## 🏗 Programming Principles (Принципи програмування)
+## Programming Principles (Принципи програмування)
 
 Проєкт розроблений з дотриманням ключових стандартів чистого коду:
 
@@ -41,7 +41,7 @@
 
 ---
 
-## 🧩 Design Patterns (Патерни проєктування)
+## Design Patterns (Патерни проєктування)
 
 1.  **Strategy Pattern**: Реалізовано через інтерфейс [`TypingStrategy`](https://github.com/matganzovka90-bit/FastTyping/blob/main/src/main/java/speed/fasttyping/strategy/TypingStrategy.java). Це дозволяє легко перемикати логіку різних режимів друку під час виконання програми.
 2.  **Observer Pattern**: Використовується для оновлення UI. [`TypingSession`](https://github.com/matganzovka90-bit/FastTyping/blob/main/src/main/java/speed/fasttyping/strategy/TypingStrategy.java) повідомляє підписників (`WpmObserver`, `AccuracyObserver`), коли змінюються показники.
@@ -50,7 +50,7 @@
 
 ---
 
-## ♻️ Refactoring Techniques (Техніки рефакторингу)
+## Refactoring Techniques (Техніки рефакторингу)
 
 * **Extract Method**: Розбиття великих методів у контролерах на дрібніші (`renderText`, `updateSummary`, `loadAchievements`).
 * **Extract Module**: Поділ коду на логічні пакети (`strategy`, `observer`, `dao`, `util`) для зменшення зв'язаності.
